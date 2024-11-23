@@ -204,7 +204,7 @@ SWITCH
 241
 draw?
 draw?
-1
+0
 1
 -1000
 
@@ -247,6 +247,16 @@ The plan for model extension is as follows:
     * each experiment would generate a data point for a given weather condition
     * multiple experiments across a range of parameters would create a database for an ML model
     * this database could cover the entire pipleine (for now we are just looking at one section of the APPL line)
+
+## IDEAS
+
+Change the `move-to one-of patches` command when creating raindrops to a centroid.
+
+```
+move-to patch random-normal mean-pxcor stddev-pxcor random-normal mean-pycor stddev-pycor
+```
+
+The `max-pxcor` and `max-pycor` could be used to determine where the centroil (i.e., the means) are located. The standard deviation could be related to the size of the storm.
 
 ## NETLOGO FEATURES
 
