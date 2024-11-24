@@ -240,9 +240,11 @@ The plan for model extension is as follows:
   * Pipeline: 
     * turtles as sensing points connected by links
     * could the pipeline be specified using the mouse?
+    * setup process: (1) specifiy start and end point, (2) specify the number of sensing points (spaced evenly between start and end points), (3) connect all points with links
   * Rainfall:
     * rather than random rainfall across the map, random around a centroid
     * move the centroid (to simulate the storm moving through)
+    * it would be nice to show the centroid on the map (as it moves)
   * Experiments:
     * each experiment would generate a data point for a given weather condition
     * multiple experiments across a range of parameters would create a database for an ML model
