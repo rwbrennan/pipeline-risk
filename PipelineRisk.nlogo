@@ -1,11 +1,12 @@
 extensions [ gis ]
 
 breed [raindrops raindrop]
+breed [sensors sensor]
 
 globals [
   elevation
-  slope
-  aspect
+  slope      ;; rate of change of elevation for each DEM pixel
+  aspect     ;; slope direction
   border
 ]
 
@@ -204,7 +205,7 @@ SWITCH
 241
 draw?
 draw?
-0
+1
 1
 -1000
 
@@ -241,6 +242,7 @@ The plan for model extension is as follows:
     * turtles as sensing points connected by links
     * could the pipeline be specified using the mouse?
     * setup process: (1) specifiy start and end point, (2) specify the number of sensing points (spaced evenly between start and end points), (3) connect all points with links
+    * here is a start on (1): `ask patch 10 10 [ sprout-sensors 1 ]`
   * Rainfall:
     * rather than random rainfall across the map, random around a centroid
     * move the centroid (to simulate the storm moving through)
