@@ -209,8 +209,8 @@ SLIDER
 rain-rate
 rain-rate
 0
-10
-10.0
+50
+22.0
 1
 1
 drops/tick
@@ -316,7 +316,9 @@ This model simulates raifall over a geographic area. The intention is to determi
 
 The model loads a digtial elevation model (DEM) in ASCII .asc format on setup. The DEM can be prepared using [QGIS](https://www.qgis.org/) and the [OpenTopography DEM](https://opentopography.org/) plugin. The worldview is adjusted during setup based on the size of the DEM (i.e., number of columns and rows in the .asc file).
 
-The _Go_ routine creates raindrops at random locations at the specified _rain-rate_. Raindrops flow downstream based on the slope of the landscape (determined by the DEM).  
+The _Go_ routine creates raindrops at random locations at the specified _rain-rate_. Raindrops flow downstream based on the slope of the landscape (determined by the DEM). 
+
+A pipeline with sensing points is added to the model worldview by reading the start and end points and number of sensing points from a text file. The sensing points will be used to determine water flowrate at various points along the pipeline. 
 
 ## HOW TO USE IT
 
@@ -325,10 +327,11 @@ The model includes the following options:
 * _Setup_ Button: loads the DEM.
 * _Go_ Button: creates raindrops at the specified _rain-rate_.
 * _Display Elevation_ Button: renders the worldview by elevation (This is the default view).
-* _Display Slope_ Button: renders the worldview by slope.  
-* _Display Aspect_ Button: renders the worldview by aspect.
+* _Display Slope_ Button: renders the worldview by slope (rate of change of elevation for each DEM pixel).  
+* _Display Aspect_ Button: renders the worldview by aspect (slope direction).
 * _draw?_ Selector: draws the path of each raindrop.
 * _rain-rate_ Selector: allows the user to select the rain rate in drops/tick.  
+* _Rainfall_ Plot: this plot shows the current number of raindrops around the sensor (a rough indicator of the current flow of water at the sensing point); different sensing locations can be selected by clicking on a pipeline sensor; when selected, the sensor changes from yellow to red and the Rainfall plot shows data at the sensor point.
 
 ## EXTENDING THE MODEL
 
@@ -337,10 +340,8 @@ Ultimately, the model will be used to generate a database of rainfall cases for 
 The plan for model extension is as follows:
 
   * Pipeline: 
-    * turtles as sensing points connected by links
-    * could the pipeline be specified using the mouse?
-    * setup process: (1) specifiy start and end point, (2) specify the number of sensing points (spaced evenly between start and end points), (3) connect all points with links
-    * here is a start on (1): `ask patch 10 10 [ sprout-sensors 1 ]`
+    * sensor turtles have been added as sensing points along the pipeline (connected by links)
+    * currently, only a straight pipeline section can be specified; it would be helpful to be able to specify bends in the pipeline (see the APPL pipeline in Google Earth)
   * Rainfall:
     * rather than random rainfall across the map, random around a centroid
     * move the centroid (to simulate the storm moving through)
@@ -373,7 +374,7 @@ This model uses features of the _Grand Canyon_ model and the _GIS Gradient Examp
 Copyright 2024 Robert W. Brennan.
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
-<!-- 2023 -->
+<!-- 2024 -->
 @#$#@#$#@
 default
 true
