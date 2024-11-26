@@ -1,0 +1,15 @@
+QGIS
+- requires the following plugins to be installed:
+  - HCMGIS: allows basemaps such as Google Maps to be loaded and searched
+  - OpenTopography DEM: allows digigal elevation models to be developed from OpenTopography (an account and API key is required to make this work)
+- load basemap:
+   HCMGIS > Google Maps
+- create DEM (https://www.youtube.com/watch?v=FeM86Gz40_k)
+   Raster > OpenTopography DEM
+   select the area of the map (it would be helpful to determine how to select a square area)
+- save as ASCII file (https://www.youtube.com/watch?v=iBECsts__jo)
+   Raster > Conversion > Translate (Convert Format)
+   make sure that the DEM is selected (in "Input Layer")
+   select file directory and name in Converted
+   make sure that ASC files (*.asc) is selected
+   this file can be directly loaded into Netlogo (see GIS Gradient Example) using gis:load-dataset (https://ccl.northwestern.edu/netlogo/docs/gis.html#gis:load-dataset)
