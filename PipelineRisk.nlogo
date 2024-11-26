@@ -9,9 +9,15 @@ sensors-own [
 
 globals [
   elevation
-  slope      ;; rate of change of elevation for each DEM pixel
-  aspect     ;; slope direction
+  slope               ;; rate of change of elevation for each DEM pixel
+  aspect              ;; slope direction
   border
+  sensor-selected     ;; the sensor selected for plotting
+  start-x             ;; pxcor for the start of the pipeline
+  start-y             ;; pycor for the start of the pipeline
+  end-x               ;; pxcor for the end of the pipeline
+  end-y               ;; pycor for the end of the pipeline
+  number-of-sensors   ;; number of sensors in the pipeline (evenly spaced over length)
 ]
 
 to setup
@@ -45,6 +51,8 @@ to setup
   gis:set-sampling-method aspect "bilinear"
   gis:paint elevation 0
   set border patches with [ count neighbors != 8 ]
+  create-pipeline
+  set sensor-selected 1
   reset-ticks
 end
 
@@ -68,6 +76,20 @@ to go
     ask raindrops-here [ die ]
   ]
 
+  if mouse-down? and any? sensors-on patch mouse-xcor mouse-ycor
+  [
+    ask sensors-on patch mouse-xcor mouse-ycor [set sensor-selected sensor-no]
+    set-current-plot "Rainfall"
+    clear-plot
+  ]
+
+  ask sensors
+  [
+    ifelse sensor-no = sensor-selected
+    [ set color red ]
+    [ set color yellow ]
+  ]
+
   ifelse draw?
     [ ask raindrops [ pen-down ] ]
     [ ask raindrops [ pen-up ] ]
@@ -76,9 +98,10 @@ to go
 end
 
 to create-pipeline
-  ;; This method is used to create the pipeline on the map
+  ;; This procedure is used to create the pipeline on the map
   ;; - pipleine includes sensor points that are evenly spaced from start to end sensor
   ;; - each sensor is connected by a link
+  read-pipeline-data
   let x-spacing ((start-x - end-x) / (number-of-sensors - 1))
   let i 0
   let sensor-x 0
@@ -101,7 +124,20 @@ to create-pipeline
     ]
     set i i + 1
   ]
+end
 
+to read-pipeline-data
+  ;; This procedure is used to read from a text file that specifies the pipeline
+  file-open "data/Airdrie-to-Bowden-APPL.txt"
+  while [ not file-at-end? ]
+  [
+    set start-x file-read
+    set start-y file-read
+    set end-x file-read
+    set end-y file-read
+    set number-of-sensors file-read
+  ]
+  file-close
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -242,114 +278,34 @@ draw?
 1
 -1000
 
-SLIDER
-7
-337
-179
-370
-start-x
-start-x
+PLOT
 0
-max-pxcor
-47.0
-1
-1
-patches
-HORIZONTAL
+385
+200
+535
+Rainfall
+NIL
+NIL
+0.0
+10.0
+0.0
+5.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -14454117 true "" "ask sensor (sensor-selected - 1) [ plot count raindrops-on neighbors ]\n"
 
-SLIDER
-7
-374
-179
-407
-start-y
-start-y
-0
-max-pycor
-184.0
-1
-1
-patches
-HORIZONTAL
-
-BUTTON
-20
-592
-143
-625
-Create Pipeline
-create-pipeline
+MONITOR
+14
+328
+127
+373
 NIL
+sensor-selected
+17
 1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-19
-652
-133
-685
-Clear Pipeline
-ask sensors [ die ]
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-SLIDER
-7
-421
-179
-454
-end-x
-end-x
-0
-max-pxcor
-85.0
-1
-1
-patches
-HORIZONTAL
-
-SLIDER
-7
-462
-179
-495
-end-y
-end-y
-0
-max-pycor
-125.0
-1
-1
-patches
-HORIZONTAL
-
-SLIDER
-9
-517
-187
-550
-number-of-sensors
-number-of-sensors
-3
-1000
-9.0
-1
-1
-NIL
-HORIZONTAL
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
