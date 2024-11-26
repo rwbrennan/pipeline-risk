@@ -3,6 +3,10 @@ extensions [ gis ]
 breed [raindrops raindrop]
 breed [sensors sensor]
 
+sensors-own [
+  sensor-no  ;; sensor number
+]
+
 globals [
   elevation
   slope      ;; rate of change of elevation for each DEM pixel
@@ -69,6 +73,37 @@ to go
     [ ask raindrops [ pen-up ] ]
 
   tick
+end
+
+to create-pipeline
+  ;; This method is used to create the pipeline on the map
+
+  ;; Create the starting point
+  create-sensors 1 [
+    setxy start-x start-y
+    set color yellow
+    set size 1.5
+    set shape "circle"
+    set sensor-no 1
+  ]
+  let x-spacing ((start-x - end-x) / (number-of-sensors - 1))
+  let i 1
+  let sensor-x 0
+  let sensor-y 0
+  while [ i < number-of-sensors ]
+  [
+    create-sensors 1 [
+      set sensor-x (start-x - i * x-spacing)
+      set sensor-y ((end-y - start-y) / (end-x - start-x)) * (sensor-x - start-x) + start-y
+      setxy sensor-x sensor-y
+      set color yellow
+      set size 1.5
+      set shape "circle"
+      set sensor-no i + 1
+    ]
+    set i i + 1
+  ]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -141,7 +176,7 @@ rain-rate
 rain-rate
 0
 10
-5.0
+10.0
 1
 1
 drops/tick
@@ -208,6 +243,115 @@ draw?
 1
 1
 -1000
+
+SLIDER
+7
+337
+179
+370
+start-x
+start-x
+0
+max-pxcor
+121.0
+1
+1
+patches
+HORIZONTAL
+
+SLIDER
+7
+374
+179
+407
+start-y
+start-y
+0
+max-pycor
+180.0
+1
+1
+patches
+HORIZONTAL
+
+BUTTON
+20
+592
+143
+625
+Create Pipeline
+create-pipeline
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+19
+652
+133
+685
+Clear Pipeline
+ask sensors [ die ]
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+7
+421
+179
+454
+end-x
+end-x
+0
+max-pxcor
+28.0
+1
+1
+patches
+HORIZONTAL
+
+SLIDER
+7
+462
+179
+495
+end-y
+end-y
+0
+max-pycor
+162.0
+1
+1
+patches
+HORIZONTAL
+
+SLIDER
+9
+517
+187
+550
+number-of-sensors
+number-of-sensors
+3
+1000
+9.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
