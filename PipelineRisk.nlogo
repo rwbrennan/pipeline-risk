@@ -77,19 +77,13 @@ end
 
 to create-pipeline
   ;; This method is used to create the pipeline on the map
-
-  ;; Create the starting point
-  create-sensors 1 [
-    setxy start-x start-y
-    set color yellow
-    set size 1.5
-    set shape "circle"
-    set sensor-no 1
-  ]
+  ;; - pipleine includes sensor points that are evenly spaced from start to end sensor
+  ;; - each sensor is connected by a link
   let x-spacing ((start-x - end-x) / (number-of-sensors - 1))
-  let i 1
+  let i 0
   let sensor-x 0
   let sensor-y 0
+  let my-sensor-no 0
   while [ i < number-of-sensors ]
   [
     create-sensors 1 [
@@ -100,6 +94,10 @@ to create-pipeline
       set size 1.5
       set shape "circle"
       set sensor-no i + 1
+      set my-sensor-no sensor-no
+      if i > 0 [
+        create-links-with sensors with [ sensor-no = my-sensor-no - 1 ]
+      ]
     ]
     set i i + 1
   ]
@@ -240,7 +238,7 @@ SWITCH
 241
 draw?
 draw?
-1
+0
 1
 -1000
 
@@ -253,7 +251,7 @@ start-x
 start-x
 0
 max-pxcor
-121.0
+47.0
 1
 1
 patches
@@ -268,7 +266,7 @@ start-y
 start-y
 0
 max-pycor
-180.0
+184.0
 1
 1
 patches
@@ -317,7 +315,7 @@ end-x
 end-x
 0
 max-pxcor
-28.0
+85.0
 1
 1
 patches
@@ -332,7 +330,7 @@ end-y
 end-y
 0
 max-pycor
-162.0
+125.0
 1
 1
 patches
