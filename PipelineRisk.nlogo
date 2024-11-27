@@ -2,6 +2,7 @@ extensions [ gis ]
 
 breed [raindrops raindrop]
 breed [sensors sensor]
+breed [storms storm]
 
 sensors-own [
   sensor-no  ;; sensor number
@@ -62,6 +63,7 @@ to go
   ;; - currently randomly spaced over the worldview
   create-raindrops rain-rate
   [ move-to one-of patches
+  ;[ weather-pattern 10 20 225 20
     set size 0.6
     set shape "circle"
     set color blue ]
@@ -158,6 +160,20 @@ to read-pipeline-data
     set number-of-sensors file-read
   ]
   file-close
+end
+
+to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor ]
+  ;; This procedure is used to move raindrops to a location on the worldview that
+  ;; follows a moving weather pattern
+  ;;
+  let drop-pxcor random-normal mean-pxcor stdev-pxcor
+  let drop-pycor random-normal mean-pycor stdev-pycor
+  ;show ( word "pxcor = " drop-pxcor " pycor = " drop-pycor )
+  if drop-pxcor < max-pxcor and drop-pxcor > 0 and drop-pycor < max-pycor and drop-pycor > 0
+  [
+    move-to patch drop-pxcor drop-pycor
+    ;show ( word "raindrop at " drop-pxcor ", " drop-pycor )
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
