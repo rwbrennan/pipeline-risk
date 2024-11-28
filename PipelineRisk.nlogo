@@ -2,7 +2,7 @@ extensions [ gis ]
 
 breed [raindrops raindrop]
 breed [sensors sensor]
-breed [storms storm]
+breed [cells cell]
 
 sensors-own [
   sensor-no  ;; sensor number
@@ -20,6 +20,13 @@ globals [
   end-x               ;; pxcor for the end of the pipeline
   end-y               ;; pycor for the end of the pipeline
   number-of-sensors   ;; number of sensors in the pipeline (evenly spaced over length)
+  cell-mean-x         ;; storm cell mean pxcor
+  cell-sd-x           ;; storm cell Std Dev pxcor
+  cell-mean-y         ;; storm cell mean pycor
+  cell-sd-y           ;; storm cell Std Dev pycor
+  cell-rain-rate      ;; storm cell rain rate
+  cell-speed          ;; storm cell speed
+  cell-direction      ;; storm cell direction
 ]
 
 to setup
@@ -55,18 +62,20 @@ to setup
   set border patches with [ count neighbors != 8 ]
   create-pipeline
   set sensor-selected 1
+  ;; Create the storm cell(s)
+  create-cells 1
+  [
+    set size 4
+    set shape "x"
+    set color green
+    move-to patch cell-mean-x cell-mean-y
+  ]
   reset-ticks
 end
 
 to go
   ;; Create the rainfall
-  ;; - currently randomly spaced over the worldview
-  create-raindrops rain-rate
-  [ move-to one-of patches
-  ;[ weather-pattern 10 20 225 20
-    set size 0.6
-    set shape "circle"
-    set color blue ]
+  weather-pattern cell-mean-x cell-sd-x cell-mean-y cell-sd-y cell-rain-rate
   ;; Allow the rain to flow downslope based on the DEM
   ask raindrops
   [ forward random-normal 0.1 0.1
@@ -75,8 +84,8 @@ to go
     [ set heading subtract-headings h 180 ]
     [ die ] ]
   ;; Stop the simulation once all of the rain has left the worldview
-  if not any? raindrops
-  [ stop ]
+  ;if not any? raindrops
+  ;[ stop ]
 
   ;; Remove the raindrops when they flow to the border of the worldview
   ask border
@@ -150,6 +159,7 @@ to read-pipeline-data
   ;; <pxcor of start of pipeline> <pycor of start of pipeline>
   ;; <pxcor of end of pipeline> <pycor of end of pipeline>
   ;; <number of pipeline sensors>
+  ;; <cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> ... later add cell speed/direction
   file-open "data/Airdrie-to-Bowden-APPL.txt"
   while [ not file-at-end? ]
   [
@@ -158,11 +168,16 @@ to read-pipeline-data
     set end-x file-read
     set end-y file-read
     set number-of-sensors file-read
+    set cell-mean-x file-read
+    set cell-sd-x file-read
+    set cell-mean-y file-read
+    set cell-sd-y file-read
+    set cell-rain-rate file-read
   ]
   file-close
 end
 
-to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor ]
+to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor rain-rate]
   ;; This procedure is used to move raindrops to a location on the worldview that
   ;; follows a moving weather pattern
   ;;
@@ -171,8 +186,14 @@ to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor ]
   ;show ( word "pxcor = " drop-pxcor " pycor = " drop-pycor )
   if drop-pxcor < max-pxcor and drop-pxcor > 0 and drop-pycor < max-pycor and drop-pycor > 0
   [
-    move-to patch drop-pxcor drop-pycor
-    ;show ( word "raindrop at " drop-pxcor ", " drop-pycor )
+    create-raindrops rain-rate
+    [
+      set size 0.6
+      set shape "circle"
+      set color blue
+      move-to patch drop-pxcor drop-pycor
+      ;show ( word "raindrop at " drop-pxcor ", " drop-pycor )
+    ]
   ]
 end
 @#$#@#$#@
@@ -236,21 +257,6 @@ NIL
 NIL
 NIL
 1
-
-SLIDER
-12
-201
-190
-234
-rain-rate
-rain-rate
-0
-50
-26.0
-1
-1
-drops/tick
-HORIZONTAL
 
 BUTTON
 12
