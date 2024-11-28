@@ -417,7 +417,7 @@ This model simulates raifall over a geographic area. The intention is to determi
 
 The model loads a digtial elevation model (DEM) in ASCII .asc format on _Setup_. The DEM can be prepared using [QGIS](https://www.qgis.org/) and the [OpenTopography DEM](https://opentopography.org/) plugin. The worldview is adjusted during setup based on the size of the DEM (i.e., number of columns and rows in the .asc file).
 
-On _Setup_ a text file is read to load the pipeline and storm cell data. The format of the file is as follows:
+Additionally, on _Setup_ a text file is read to load the pipeline and storm cell data. The format of the file is as follows:
 
 ```
 <pxcor of start of pipeline> <pycor of start of pipeline>
@@ -426,13 +426,15 @@ On _Setup_ a text file is read to load the pipeline and storm cell data. The for
 <cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> <cell-speed> <cell-heading>
 ```
 
-The _Go_ routine creates raindrops at random locations at the specified _rain-rate_. Raindrops flow downstream based on the slope of the landscape (determined by the DEM). 
+The `<cell speed>` parameter is really a rate: i.e., number of ticks until a forward movement of 1.
+
+The _Go_ routine creates raindrops at random locations around a moving centroid (storm cell) at the specified _rain-rate_. This storm cell is shown by a green X on the worldview and labelled with its "size" (std deviation in x and y directions). Raindrops flow downstream based on the slope of the landscape (determined by the DEM). Raindrops are represented by blue dots. 
 
 ## HOW TO USE IT
 
 The model includes the following options:
 
-* _Setup_ Button: loads the DEM and the pipeline data.
+* _Setup_ Button: loads the DEM and the pipeline data files.
 * _Go_ Button: creates raindrops at the specified _rain-rate_.
 * _Display Elevation_ Button: renders the worldview by elevation (This is the default view).
 * _Display Slope_ Button: renders the worldview by slope (rate of change of elevation for each DEM pixel).  
@@ -449,11 +451,18 @@ Ultimately, the model will be used to generate a database of rainfall cases for 
 The plan for model extension is as follows:
 
   * Pipeline: 
-    * _sensor_ turtles have been added as sensing points along the pipeline (connected by links)
     * currently, only a straight pipeline section can be specified; it would be helpful to be able to specify bends in the pipeline (see the APPL pipeline in Google Earth)
+    * it would be interesting to have the _sensor_ nodes change in appearance based on the flow at the sensor; this could be a change in colour and/or size of the sensor point
+  * Weather Pattern:
+    * a single weather pattern moves through the geographic area by having the rainfall occur around a centroid (i.e., the centre of the weather pattern)
+    * could multiple storm cells be added (this will likely require the centroid parameters to be moved from global to local (to the cell type) or changed to a list; as well as some changes to the code to reflect this
   * Rainfall:
-    * a weather pattern moves through the geographic area by having the rainfall occur around a centroid (i.e., the centre of the weather pattern)
-    * could multiple storm cells be added (this will likely mean changing the centroid parameters from global to local (to the cell type)
+    * currently, raindrops move downslope at the same rate regardless of the slope
+    * it would be interesting to have the flow rate change based on the difference in slope
+  * Scales:
+    * it would be helpful to have a sense of various scales in the model (currently, everything is dimensionless)
+    * distances: can we get a measure of the distance scale (in kilometers) from the DEM data?
+    * rain rate and flow: can we get a rough sense of this?
   * Experiments:
     * each experiment would generate a data point for a given weather condition
     * multiple experiments across a range of parameters would create a database for an ML model
@@ -461,9 +470,20 @@ The plan for model extension is as follows:
 
 ## IDEAS
 
-### Weather Pattern
+### Multiple Storm Cells
 
-Try multiple storm cells.
+As noted above, the option for multiple storm cells should be added. From an input data perspective, this could just be a matter of adding extra storm cell lines to the input data file.
+
+### Storm Cell at Boundary
+
+When the storm centroid reaches the boundary, the current model decreases the rain rate by 10% at each step (i.e., based on the cell centroid speed). This is not quite right as the size of the cell (within the boundaries) is also decreasing. The current approach is likely a good approximation, though it would be worthwhile to investigate this part of the model more closely.
+
+### Data Collection
+
+Data needs to be collected at each of the sensor points. For example:
+
+  * location of sensor: could this be obtained from the DEM?
+  * water flow: current flow, maximum flow, flow profile
 
 ## NETLOGO FEATURES
 
