@@ -26,7 +26,7 @@ globals [
   cell-sd-y           ;; storm cell Std Dev pycor
   cell-rain-rate      ;; storm cell rain rate
   cell-speed          ;; storm cell speed
-  cell-direction      ;; storm cell direction
+  cell-heading        ;; storm cell heading (0 is north, 90 is east, and so on)
 ]
 
 to setup
@@ -68,6 +68,8 @@ to setup
     set size 4
     set shape "x"
     set color green
+    set heading cell-heading
+    set label (word "(" cell-sd-x ", " cell-sd-y ")")
     move-to patch cell-mean-x cell-mean-y
   ]
   reset-ticks
@@ -76,6 +78,24 @@ end
 to go
   ;; Create the rainfall
   weather-pattern cell-mean-x cell-sd-x cell-mean-y cell-sd-y cell-rain-rate
+  ;; Move storm cell(s)
+  ask cells
+  [
+    if ticks mod cell-speed = 0
+    [
+      ifelse not member? patch-here border
+      [
+        ;; move across the worldview
+        fd 1
+        set cell-mean-x pxcor
+        set cell-mean-y pycor
+      ]
+      [
+        ;; diminish (for now just diminish by 10% per increment)
+        set cell-rain-rate floor ( cell-rain-rate * 0.9 )
+      ]
+    ]
+  ]
   ;; Allow the rain to flow downslope based on the DEM
   ask raindrops
   [ forward random-normal 0.1 0.1
@@ -106,7 +126,7 @@ to go
       set sensor-who who
       if inspect-sensor? [ inspect sensor sensor-who ]
     ]
-    set-current-plot "Rainfall"
+    set-current-plot "Flow"
     clear-plot
   ]
   ask sensors
@@ -159,7 +179,7 @@ to read-pipeline-data
   ;; <pxcor of start of pipeline> <pycor of start of pipeline>
   ;; <pxcor of end of pipeline> <pycor of end of pipeline>
   ;; <number of pipeline sensors>
-  ;; <cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> ... later add cell speed/direction
+  ;; <cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> <cell-speed> <cell-heading>
   file-open "data/Airdrie-to-Bowden-APPL.txt"
   while [ not file-at-end? ]
   [
@@ -173,28 +193,38 @@ to read-pipeline-data
     set cell-mean-y file-read
     set cell-sd-y file-read
     set cell-rain-rate file-read
+    set cell-speed file-read
+    set cell-heading file-read
   ]
   file-close
 end
 
-to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor rain-rate]
+to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor rain-rate ]
   ;; This procedure is used to move raindrops to a location on the worldview that
   ;; follows a moving weather pattern
   ;;
-  let drop-pxcor random-normal mean-pxcor stdev-pxcor
-  let drop-pycor random-normal mean-pycor stdev-pycor
-  ;show ( word "pxcor = " drop-pxcor " pycor = " drop-pycor )
-  if drop-pxcor < max-pxcor and drop-pxcor > 0 and drop-pycor < max-pycor and drop-pycor > 0
+  let i 0
+  let drop-pxcor 0
+  let drop-pycor 0
+  while [ i < rain-rate ]
   [
-    create-raindrops rain-rate
+    set drop-pxcor random-normal mean-pxcor stdev-pxcor
+    set drop-pycor random-normal mean-pycor stdev-pycor
+    if drop-pxcor < max-pxcor and drop-pxcor > 0 and drop-pycor < max-pycor and drop-pycor > 0
     [
-      set size 0.6
-      set shape "circle"
-      set color blue
-      move-to patch drop-pxcor drop-pycor
-      ;show ( word "raindrop at " drop-pxcor ", " drop-pycor )
+      create-raindrops 1
+      [
+        set size 0.6
+        set shape "circle"
+        set color blue
+        move-to patch drop-pxcor drop-pycor
+      ]
     ]
+    set i i + 1
   ]
+
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -325,7 +355,7 @@ PLOT
 400
 204
 550
-Rainfall
+Flow
 NIL
 NIL
 0.0
@@ -365,7 +395,7 @@ PLOT
 564
 203
 714
-Total-Rainfall
+Rainfall
 NIL
 NIL
 0.0
@@ -387,7 +417,14 @@ This model simulates raifall over a geographic area. The intention is to determi
 
 The model loads a digtial elevation model (DEM) in ASCII .asc format on _Setup_. The DEM can be prepared using [QGIS](https://www.qgis.org/) and the [OpenTopography DEM](https://opentopography.org/) plugin. The worldview is adjusted during setup based on the size of the DEM (i.e., number of columns and rows in the .asc file).
 
-A pipeline is also added to the worldview on _Setup_ by reading the start and end points of the pipeline and the number of sensing points on the pipeline from a text file. 
+On _Setup_ a text file is read to load the pipeline and storm cell data. The format of the file is as follows:
+
+```
+<pxcor of start of pipeline> <pycor of start of pipeline>
+<pxcor of end of pipeline> <pycor of end of pipeline>
+<number of pipeline sensors>
+<cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> <cell-speed> <cell-heading>
+```
 
 The _Go_ routine creates raindrops at random locations at the specified _rain-rate_. Raindrops flow downstream based on the slope of the landscape (determined by the DEM). 
 
@@ -401,10 +438,9 @@ The model includes the following options:
 * _Display Slope_ Button: renders the worldview by slope (rate of change of elevation for each DEM pixel).  
 * _Display Aspect_ Button: renders the worldview by aspect (slope direction).
 * _draw?_ Selector: draws the path of each raindrop.
-* _rain-rate_ Selector: allows the user to select the rain rate in drops/tick.  
 * _inspect-sensor_ Selector: allows the user to select the `inspect sensor` feature; when selected, a window opens showing the details the sensor that is selected (clicked on).
-* _Rainfall_ Plot: this plot shows the current number of raindrops around the sensor (a rough indicator of the current flow of water at the sensing point); different sensing locations can be selected by clicking on a pipeline sensor; when selected, the sensor changes from yellow to red and the Rainfall plot shows data at the sensor point.
-* _Total-Rainfall_ Plot: this plot shows the total amount of rainfall (raindrops) in the worldview
+* _Flow_ Plot: this plot shows the current number of raindrops around the sensor (a rough indicator of the current flow of water at the sensing point); different sensing locations can be selected by clicking on a pipeline sensor; when selected, the sensor changes from yellow to red and the Rainfall plot shows data at the sensor point.
+* _Rainfall_ Plot: this plot shows the total amount of rainfall (raindrops) in the worldview
 
 ## EXTENDING THE MODEL
 
@@ -416,8 +452,8 @@ The plan for model extension is as follows:
     * _sensor_ turtles have been added as sensing points along the pipeline (connected by links)
     * currently, only a straight pipeline section can be specified; it would be helpful to be able to specify bends in the pipeline (see the APPL pipeline in Google Earth)
   * Rainfall:
-    * rather than random rainfall across the map, it would be useful to simulate a weather pattern moving through the geographic area by having the rainfall occur around a centroid (i.e., the centre of the weather pattern)
-    * it would be nice to show the centroid on the map (as it moves)
+    * a weather pattern moves through the geographic area by having the rainfall occur around a centroid (i.e., the centre of the weather pattern)
+    * could multiple storm cells be added (this will likely mean changing the centroid parameters from global to local (to the cell type)
   * Experiments:
     * each experiment would generate a data point for a given weather condition
     * multiple experiments across a range of parameters would create a database for an ML model
@@ -427,13 +463,7 @@ The plan for model extension is as follows:
 
 ### Weather Pattern
 
-Change the `move-to one-of patches` command when creating raindrops to a centroid.
-
-```
-move-to patch random-normal mean-pxcor stddev-pxcor random-normal mean-pycor stddev-pycor
-```
-
-The `max-pxcor` and `max-pycor` could be used to determine where the centroil (i.e., the means) are located. The standard deviation could be related to the size of the storm.
+Try multiple storm cells.
 
 ## NETLOGO FEATURES
 
