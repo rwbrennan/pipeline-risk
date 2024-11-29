@@ -82,6 +82,7 @@ to setup
     set label (word "(" cell-sd-x ", " cell-sd-y ")")
     move-to patch cell-mean-x cell-mean-y
   ]
+  GIS-calculations
   reset-ticks
 end
 
@@ -238,6 +239,49 @@ to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor rain-rate ]
   ]
 end
 
+to GIS-calculations
+  ;; This procedure is used to calculate the GIS data from the DEM file
+  ;;
+  let temp 0
+  ;; Calculate Latitude
+  set lat-deg floor latitude
+  set temp (( latitude - lat-deg) * 60)
+  set lat-min floor temp
+  set lat-sec floor (( temp - lat-min) * 60)
+  ;show (word "latitude " lat-deg " deg " lat-min " min " lat-sec " sec North")
+  ;; Calculate Longitude
+  set longitude longitude * -1
+  set long-deg floor longitude
+  set temp (( longitude - long-deg) * 60)
+  set long-min floor temp
+  set long-sec floor (( temp - long-min) * 60)
+  ;show (word "longitude " long-deg " deg " long-min " min " long-sec " sec West")
+  create-turtles 1
+  [
+    set label-color black
+    set label (word "latitude " lat-deg " deg " lat-min " min " lat-sec " sec North")
+    move-to patch (max-pxcor / 4) 5
+  ]
+  create-turtles 1
+  [
+    set label-color black
+    set label (word "longitude " long-deg " deg " long-min " min " long-sec " sec West")
+    move-to patch (max-pxcor / 4) 3
+  ]
+  ;; Calculate Scale
+  ;; - DEM: ncols = 1492, nrows = 2254
+  ;; - ABM: worldview is 149 x 225
+  ;; - as a result, each patch contains 10 x 10 cells
+  set patch-scale cell-size * 10
+  let width round (patch-scale * (max-pxcor + 1) / 1000)
+  let height round (patch-scale * (max-pycor + 1) / 1000)
+  create-turtles 1
+  [
+    set label-color black
+    set label (word "Scale: " width " km E/W x " height " km N/S (" (round patch-scale) " m/patch)" )
+    move-to patch (max-pxcor / 4) 1
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -358,7 +402,7 @@ SWITCH
 272
 draw?
 draw?
-1
+0
 1
 -1000
 
