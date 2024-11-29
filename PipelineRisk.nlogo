@@ -27,6 +27,16 @@ globals [
   cell-rain-rate      ;; storm cell rain rate
   cell-speed          ;; storm cell speed
   cell-heading        ;; storm cell heading (0 is north, 90 is east, and so on)
+  cell-size           ;; cell size from DEM (meters)
+  patch-scale         ;; patch scale (meters)
+  latitude            ;; latitude (decimal)
+  lat-deg             ;; latitude (degrees)
+  lat-min             ;; latitude (minutes)
+  lat-sec             ;; latitude (seconds)
+  longitude           ;; longitude (decimal)
+  long-deg            ;; longitude (degrees)
+  long-min            ;; longitude (minutes)
+  long-sec            ;; longitude (seconds)
 ]
 
 to setup
@@ -176,6 +186,7 @@ end
 to read-pipeline-data
   ;; This procedure is used to read from a text file that specifies the pipeline
   ;; The format of the file is:
+  ;; <longitude in decimal> <latitude in decimal> <cell size>
   ;; <pxcor of start of pipeline> <pycor of start of pipeline>
   ;; <pxcor of end of pipeline> <pycor of end of pipeline>
   ;; <number of pipeline sensors>
@@ -183,6 +194,9 @@ to read-pipeline-data
   file-open "data/Airdrie-to-Bowden-APPL.txt"
   while [ not file-at-end? ]
   [
+    set longitude file-read
+    set latitude file-read
+    set cell-size file-read * 110.547E3 ;; converts degrees of latitude to meters
     set start-x file-read
     set start-y file-read
     set end-x file-read
@@ -222,10 +236,8 @@ to weather-pattern [ mean-pxcor stdev-pxcor mean-pycor stdev-pycor rain-rate ]
     ]
     set i i + 1
   ]
-
-
-
 end
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 210

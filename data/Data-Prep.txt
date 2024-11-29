@@ -13,3 +13,8 @@ QGIS
    select file directory and name in Converted
    make sure that ASC files (*.asc) is selected
    this file can be directly loaded into Netlogo (see GIS Gradient Example) using gis:load-dataset (https://ccl.northwestern.edu/netlogo/docs/gis.html#gis:load-dataset)
+
+
+Approximate conversions:
+- latitude: 1 deg = 110.574 km
+- longitude: 1 deg = 111.320 * cos(latitude)
