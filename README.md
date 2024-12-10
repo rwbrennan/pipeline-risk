@@ -57,6 +57,21 @@ The plan for model extension is as follows:
     * multiple experiments across a range of parameters would create a database for an ML model
     * this database could cover the entire pipleine (for now we are just looking at one section of the APPL line)
 
+The following is a list of next steps (not prioritized):
+
+  * latitude/longitude to cell coordinate conversion procedure (pass and return 2-element list?)
+  * cell coordinate to latitude/longitude procedure
+  * specify pipeline start/end points using latitude/longitude (in the input .txt file)
+  * associate latitude/longitude coordinates with pipeline sensors (local list variable populated when sensor is created)
+  * distance scale procedure (i.e., patch scale to distance scale)
+  * specify the storm cell speed in m/s (or km/hr) - check Environment Canada to see how weather patterns are specified
+  * specify the rainwater flow rate in m/s (also determine typical rainwater flow rates and adjust accordingly)
+  * create a procedure to update rainwater flow rate based on gradient (change in elevation) or slope
+  * update the model to allow for multiple storm cells
+  * create some animation (colour and/or size) to indicate water flow at each sensor
+  * locate the pipeline start/end more accurately with respect to the GoogleEarth model
+  * update startup code to allow for bends in the pipeline
+
 ## IDEAS
 
 ### Multiple Storm Cells
