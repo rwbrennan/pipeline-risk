@@ -18,3 +18,11 @@ QGIS
 Approximate conversions:
 - latitude: 1 deg = 110.574 km
 - longitude: 1 deg = 111.320 * cos(latitude)
+
+Books on Machine Learning (available online via the library)
+
+Chopra, Deepti, and Roopal Khurana. Introduction to Machine Learning with Python. First edition., Bentham Science Publishers Pte. Ltd., 2023.
+https://ebookcentral-proquest-com.ezproxy.lib.ucalgary.ca/lib/ucalgary-ebooks/detail.action?pq-origsite=primo&docID=30410702
+
+Zollanvari, Amin. Machine Learning with Python : Theory and Implementation. 1st ed. 2023., Springer International Publishing, 2023, https://doi.org/10.1007/978-3-031-33342-2.
+https://link-springer-com.ezproxy.lib.ucalgary.ca/book/10.1007/978-3-031-33342-2
