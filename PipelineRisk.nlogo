@@ -79,8 +79,9 @@ to setup
     set shape "x"
     set color green
     set heading cell-heading
-    set label (word "(" cell-sd-x ", " cell-sd-y ")")
+    ;set label (word "(" cell-sd-x ", " cell-sd-y ")")
     move-to patch cell-mean-x cell-mean-y
+    lat-long-label
   ]
   GIS-calculations
   reset-ticks
@@ -100,6 +101,7 @@ to go
         fd 1
         set cell-mean-x pxcor
         set cell-mean-y pycor
+        lat-long-label
       ]
       [
         ;; diminish (for now just diminish by 10% per increment)
@@ -281,6 +283,19 @@ to GIS-calculations
     set label (word "Scale: " width " km E/W x " height " km N/S (" (round patch-scale) " m/patch)" )
     move-to patch (max-pxcor / 4) 1
   ]
+end
+
+to lat-long-label
+  ;; This procedure is used to label turtles (cells and sensors) with their latitude and longitude
+  ;;
+  ;; start with decimal, the convert to D M S format
+  ;;
+  ;; Latitude
+  let temp-lat precision (latitude + (10 / 110.547E3) * cell-size * ycor) 4
+  ;; Longitude
+  let temp-long precision (-1 * longitude - (10 / 110.547E3) * cell-size * xcor) 4
+  ;show (word "(" temp-lat ", " temp-long ")")
+  set label (word "(" temp-lat ", " temp-long ")")
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
