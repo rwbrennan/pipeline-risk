@@ -145,8 +145,8 @@ to go
   ask sensors
   [
     ifelse sensor-no = sensor-selected
-    [ set color red ]
-    [ set color yellow ]
+    [ set color red lat-long-label]
+    [ set color yellow set label ""]
   ]
 
   ;; When draw? is selected by the user, the path of each raindrop is drawn on the worldview
