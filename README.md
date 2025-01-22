@@ -28,6 +28,7 @@ The model includes the following options:
 * _Display Elevation_ Button: renders the worldview by elevation (This is the default view).
 * _Display Slope_ Button: renders the worldview by slope (rate of change of elevation for each DEM pixel).  
 * _Display Aspect_ Button: renders the worldview by aspect (slope direction).
+* _deg-min-sec?_ Button: allows the user to choose the format for the _cell_ and _sensor_ coordinate labels (i.e., between degree-minutes-seconds and decimal format).
 * _draw?_ Selector: draws the path of each raindrop.
 * _inspect-sensor_ Selector: allows the user to select the `inspect sensor` feature; when selected, a window opens showing the details the sensor that is selected (clicked on).
 * _Flow_ Plot: this plot shows the current number of raindrops around the sensor (a rough indicator of the current flow of water at the sensing point); different sensing locations can be selected by clicking on a pipeline sensor; when selected, the sensor changes from yellow to red and the Rainfall plot shows data at the sensor point.
