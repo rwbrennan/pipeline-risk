@@ -83,8 +83,10 @@ to setup
     ;; **** the size of the storm cell could be added later                          ****
     ;set label (word "(" cell-sd-x ", " cell-sd-y ")")
     move-to patch cell-mean-x cell-mean-y
-    ;lat-long-label
-    lat-long-deg-label
+    ;; show latitude/longitude coordinate for the storm cell
+    ifelse deg-min-sec       ;; enable latitude longitude format
+    [ lat-long-deg-label ]
+    [ lat-long-label ]
   ]
   GIS-calculations
   reset-ticks
@@ -104,8 +106,10 @@ to go
         fd 1
         set cell-mean-x pxcor
         set cell-mean-y pycor
-        ;lat-long-label
-        lat-long-deg-label
+        ;; show latitude/longitude coordinate for the storm cell
+        ifelse deg-min-sec       ;; enable latitude longitude format
+        [ lat-long-deg-label ]
+        [ lat-long-label ]
       ]
       [
         ;; diminish (for now just diminish by 10% per increment)
@@ -151,8 +155,10 @@ to go
     ifelse sensor-no = sensor-selected
     [
       set color red
-      ;lat-long-label  ;; show latitude/longitude coordinate for the selected sensor
-      lat-long-deg-label  ;; show latitude/longitude coordinate for the selected sensor
+      ;; show latitude/longitude coordinate for the selected sensor
+      ifelse deg-min-sec       ;; enable latitude longitude format
+      [ lat-long-deg-label ]
+      [ lat-long-label ]
     ]
     [
       set color yellow
@@ -298,8 +304,7 @@ end
 
 to lat-long-label
   ;; This procedure is used to label turtles (cells and sensors) with their latitude and longitude
-  ;;
-  ;; **** start with decimal, the convert to D M S format ****
+  ;; - latitude and longitude are displayed in decimal format
   ;;
   ;; Latitude
   let temp-lat precision (latitude + (10 / 110.547E3) * cell-size * ycor) 4
@@ -311,8 +316,7 @@ end
 
 to lat-long-deg-label
   ;; This procedure is used to label turtles (cells and sensors) with their latitude and longitude
-  ;;
-  ;; **** start with decimal, the convert to D M S format ****
+  ;; - latitude and longitude are displayed in degrees, minutes, seconds format
   ;;
   let temp 0
   ;; Latitude
@@ -444,10 +448,10 @@ NIL
 1
 
 SWITCH
-12
-239
-115
-272
+9
+271
+112
+304
 draw?
 draw?
 1
@@ -511,6 +515,17 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot count raindrops"
+
+SWITCH
+8
+229
+146
+262
+deg-min-sec
+deg-min-sec
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
