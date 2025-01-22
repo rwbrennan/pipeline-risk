@@ -309,7 +309,7 @@ to lat-long-label
   ;; Latitude
   let temp-lat precision (latitude + (10 / 110.547E3) * cell-size * ycor) 4
   ;; Longitude
-  let temp-long precision (-1 * longitude - (10 / 110.547E3) * cell-size * xcor) 4
+  let temp-long precision (-1 * longitude + (10 / 110.547E3) * cell-size * xcor) 4
   ;show (word "(" temp-lat ", " temp-long ")")
   set label (word "(" temp-lat ", " temp-long ")")
 end
@@ -326,7 +326,7 @@ to lat-long-deg-label
   set lat-min floor temp
   set lat-sec floor (( temp - lat-min) * 60)
   ;; Longitude
-  let temp-long longitude - (10 / 110.547E3) * cell-size * xcor
+  let temp-long longitude + (10 / 110.547E3) * cell-size * xcor
   set long-deg floor temp-long
   set temp (( temp-long - long-deg) * 60)
   set long-min floor temp
