@@ -83,7 +83,8 @@ to setup
     ;; **** the size of the storm cell could be added later                          ****
     ;set label (word "(" cell-sd-x ", " cell-sd-y ")")
     move-to patch cell-mean-x cell-mean-y
-    lat-long-label
+    ;lat-long-label
+    lat-long-deg-label
   ]
   GIS-calculations
   reset-ticks
@@ -103,7 +104,8 @@ to go
         fd 1
         set cell-mean-x pxcor
         set cell-mean-y pycor
-        lat-long-label
+        ;lat-long-label
+        lat-long-deg-label
       ]
       [
         ;; diminish (for now just diminish by 10% per increment)
@@ -149,7 +151,8 @@ to go
     ifelse sensor-no = sensor-selected
     [
       set color red
-      lat-long-label  ;; show latitude/longitude coordinate for the selected sensor
+      ;lat-long-label  ;; show latitude/longitude coordinate for the selected sensor
+      lat-long-deg-label  ;; show latitude/longitude coordinate for the selected sensor
     ]
     [
       set color yellow
@@ -304,6 +307,28 @@ to lat-long-label
   let temp-long precision (-1 * longitude - (10 / 110.547E3) * cell-size * xcor) 4
   ;show (word "(" temp-lat ", " temp-long ")")
   set label (word "(" temp-lat ", " temp-long ")")
+end
+
+to lat-long-deg-label
+  ;; This procedure is used to label turtles (cells and sensors) with their latitude and longitude
+  ;;
+  ;; **** start with decimal, the convert to D M S format ****
+  ;;
+  let temp 0
+  ;; Latitude
+  let temp-lat latitude + (10 / 110.547E3) * cell-size * ycor
+  set lat-deg floor temp-lat
+  set temp (( temp-lat - lat-deg) * 60)
+  set lat-min floor temp
+  set lat-sec floor (( temp - lat-min) * 60)
+  ;; Longitude
+  let temp-long longitude - (10 / 110.547E3) * cell-size * xcor
+  set long-deg floor temp-long
+  set temp (( temp-long - long-deg) * 60)
+  set long-min floor temp
+  set long-sec floor (( temp - long-min) * 60)
+  ;show (word "(" lat-deg "d " lat-min "m " lat-sec "s N, " long-deg "d " long-min "m " long-sec "s W)")
+  set label (word "(" lat-deg "d " lat-min "m " lat-sec "s N, " long-deg "d " long-min "m " long-sec "s W)")
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
