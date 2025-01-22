@@ -79,6 +79,8 @@ to setup
     set shape "x"
     set color green
     set heading cell-heading
+    ;; **** remove this for now since I have added the latitude/longitude coordinate ****
+    ;; **** the size of the storm cell could be added later                          ****
     ;set label (word "(" cell-sd-x ", " cell-sd-y ")")
     move-to patch cell-mean-x cell-mean-y
     lat-long-label
@@ -145,8 +147,14 @@ to go
   ask sensors
   [
     ifelse sensor-no = sensor-selected
-    [ set color red lat-long-label]
-    [ set color yellow set label ""]
+    [
+      set color red
+      lat-long-label  ;; show latitude/longitude coordinate for the selected sensor
+    ]
+    [
+      set color yellow
+      set label ""    ;; clear labels for all non-selected sensors
+    ]
   ]
 
   ;; When draw? is selected by the user, the path of each raindrop is drawn on the worldview
@@ -288,7 +296,7 @@ end
 to lat-long-label
   ;; This procedure is used to label turtles (cells and sensors) with their latitude and longitude
   ;;
-  ;; start with decimal, the convert to D M S format
+  ;; **** start with decimal, the convert to D M S format ****
   ;;
   ;; Latitude
   let temp-lat precision (latitude + (10 / 110.547E3) * cell-size * ycor) 4
@@ -417,7 +425,7 @@ SWITCH
 272
 draw?
 draw?
-0
+1
 1
 -1000
 
