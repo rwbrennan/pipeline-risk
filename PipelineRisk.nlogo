@@ -103,6 +103,7 @@ to go
       ifelse not member? patch-here border
       [
         ;; move across the worldview
+        ;; **** use physical distances/speeds here ****
         fd 1
         set cell-mean-x pxcor
         set cell-mean-y pycor
@@ -211,6 +212,7 @@ to read-pipeline-data
   ;; <pxcor of end of pipeline> <pycor of end of pipeline>
   ;; <number of pipeline sensors>
   ;; <cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> <cell-speed> <cell-heading>
+  ;; **** determine how to include changes in the direction of the pipeline ****
   file-open "data/Airdrie-to-Bowden-APPL.txt"
   while [ not file-at-end? ]
   [
@@ -571,11 +573,12 @@ Ultimately, the model will be used to generate a database of rainfall cases for 
 The plan for model extension is as follows:
 
   * Pipeline: 
-    * currently, only a straight pipeline section can be specified; it would be helpful to be able to specify bends in the pipeline (see the APPL pipeline in Google Earth)
+    * currently, only a straight pipeline section can be specified; it would be helpful to be able to specify bends in the pipeline (see the APPL pipeline in _Google Earth_)
     * it would be interesting to have the _sensor_ nodes change in appearance based on the flow at the sensor; this could be a change in colour and/or size of the sensor point
   * Weather Pattern:
     * a single weather pattern moves through the geographic area by having the rainfall occur around a centroid (i.e., the centre of the weather pattern)
     * could multiple storm cells be added (this will likely require the centroid parameters to be moved from global to local (to the cell type) or changed to a list; as well as some changes to the code to reflect this
+    * additionally, the storm cells should grow/diminish in intensity over time
   * Rainfall:
     * currently, raindrops move downslope at the same rate regardless of the slope
     * it would be interesting to have the flow rate change based on the difference in slope
@@ -590,18 +593,17 @@ The plan for model extension is as follows:
 
 The following is a list of next steps (not prioritized):
 
-  * latitude/longitude to cell coordinate conversion procedure (pass and return 2-element list?)
-  * cell coordinate to latitude/longitude procedure
-  * specify pipeline start/end points using latitude/longitude (in the input .txt file)
-  * associate latitude/longitude coordinates with pipeline sensors (local list variable populated when sensor is created)
-  * distance scale procedure (i.e., patch scale to distance scale)
-  * specify the storm cell speed in m/s (or km/hr) - check Environment Canada to see how weather patterns are specified
-  * specify the rainwater flow rate in m/s (also determine typical rainwater flow rates and adjust accordingly)
-  * create a procedure to update rainwater flow rate based on gradient (change in elevation) or slope
-  * update the model to allow for multiple storm cells
-  * create some animation (colour and/or size) to indicate water flow at each sensor
-  * locate the pipeline start/end more accurately with respect to the GoogleEarth model
-  * update startup code to allow for bends in the pipeline
+
+  * convert input .txt to latitude-longitude coordinates
+    * properly located (based on _Google Earth_ information)
+    * update so that changes in direction are possible (not just a straight line)
+  * scaling
+    * specify the storm cell speed in m/s (or km/hr) - check Environment Canada to see how weather patterns are specified
+    * specify the rainwater flow rate in m/s (also determine typical rainwater flow rates and adjust accordingly)
+    * create a procedure to update rainwater flow rate based on gradient (change in elevation) or slope
+  * modeling enhancements
+    * update the model to allow for multiple storm cells
+    * create some animation (colour and/or size) to indicate water flow at each sensor
 
 ## IDEAS
 
@@ -613,11 +615,19 @@ As noted above, the option for multiple storm cells should be added. From an inp
 
 When the storm centroid reaches the boundary, the current model decreases the rain rate by 10% at each step (i.e., based on the cell centroid speed). This is not quite right as the size of the cell (within the boundaries) is also decreasing. The current approach is likely a good approximation, though it would be worthwhile to investigate this part of the model more closely.
 
+### Storm Cell Intensity
+
+The storm cell(s) should increase and/or diminish in intensity over time. 
+
+### Digital Elevation Model (DEM)
+
+The current DEM from Open Topography is 30 m resolution. It would be useful to use a higher resolution DEM (obtained from U Calgary resources).
+
 ### Data Collection
 
 Data needs to be collected at each of the sensor points. For example:
 
-  * location of sensor: could this be obtained from the DEM?
+  * location of sensor: currently this can be obtained directly from the DEM
   * water flow: current flow, maximum flow, flow profile
 
 ## NETLOGO FEATURES
