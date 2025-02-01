@@ -38,6 +38,7 @@ globals [
   long-deg            ;; longitude (degrees)
   long-min            ;; longitude (minutes)
   long-sec            ;; longitude (seconds)
+  sensor-flow         ;; list of sensor flows
 ]
 
 to setup
@@ -71,6 +72,7 @@ to setup
   gis:set-sampling-method aspect "bilinear"
   gis:paint elevation 0
   set border patches with [ count neighbors != 8 ]
+  set sensor-flow []
   create-pipeline
   set sensor-selected 1
   ;; Create the storm cell(s)
@@ -203,6 +205,7 @@ to create-pipeline
       set shape "circle"
       set sensor-no i + 1
       set maximum-flow 0
+      set sensor-flow lput maximum-flow sensor-flow
       set my-sensor-no sensor-no
       if i > 0 [
         create-links-with sensors with [ sensor-no = my-sensor-no - 1 ]
@@ -350,7 +353,10 @@ to calculate-max-flow
   ;;
   let current-flow count raindrops-on neighbors
   if current-flow > maximum-flow
-  [ set maximum-flow current-flow ]
+  [
+    set maximum-flow current-flow
+    set sensor-flow replace-item ( sensor-no - 1 ) sensor-flow maximum-flow
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -970,6 +976,23 @@ NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>sensor-flow</metric>
+    <enumeratedValueSet variable="deg-min-sec?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="draw?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inspect-sensor?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
