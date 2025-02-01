@@ -977,10 +977,10 @@ NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="2025-02-01 Sensor Flow" repetitions="20" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <timeLimit steps="2000"/>
+    <timeLimit steps="4000"/>
     <metric>sensor-flow</metric>
     <enumeratedValueSet variable="deg-min-sec?">
       <value value="true"/>
