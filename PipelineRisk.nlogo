@@ -5,7 +5,8 @@ breed [sensors sensor]
 breed [cells cell]
 
 sensors-own [
-  sensor-no  ;; sensor number
+  sensor-no      ;; sensor number
+  maximum-flow   ;; maximum water flow at the sensor
 ]
 
 globals [
@@ -129,6 +130,12 @@ to go
   ;if not any? raindrops
   ;[ stop ]
 
+  ;; Calculate the maximum flow at each sensor
+  ask sensors
+  [
+    calculate-max-flow
+  ]
+
   ;; Remove the raindrops when they flow to the border of the worldview
   ask border
   [
@@ -195,6 +202,7 @@ to create-pipeline
       set size 1.5
       set shape "circle"
       set sensor-no i + 1
+      set maximum-flow 0
       set my-sensor-no sensor-no
       if i > 0 [
         create-links-with sensors with [ sensor-no = my-sensor-no - 1 ]
@@ -335,6 +343,14 @@ to lat-long-deg-label
   set long-sec floor (( temp - long-min) * 60)
   ;show (word "(" lat-deg "d " lat-min "m " lat-sec "s N, " long-deg "d " long-min "m " long-sec "s W)")
   set label (word "(" lat-deg "d " lat-min "m " lat-sec "s N, " long-deg "d " long-min "m " long-sec "s W)")
+end
+
+to calculate-max-flow
+  ;; This procedure is used to calculate the maximum flow of water at each sensor
+  ;;
+  let current-flow count raindrops-on neighbors
+  if current-flow > maximum-flow
+  [ set maximum-flow current-flow ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
