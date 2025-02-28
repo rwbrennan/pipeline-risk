@@ -98,6 +98,32 @@ Data needs to be collected at each of the sensor points. For example:
   * location of sensor: currently this can be obtained directly from the DEM
   * water flow: current flow, maximum flow, flow profile
 
+### Specifying the Pipeline
+
+Currently, the pipeline is specified by a start and end point, then the sensors are placed evenly between the points in a straight line. Here are some ideas on how to specify the pipeline with changes in direction. It would be worthwhile to try to write the procedure for this in a new file, then porting the results to this file.
+
+  * The input file could specify the inital coordinates of the _locating sensors_ (sensors at the start, finish, and each point where there is a change in direction).
+  * Rather than specifying the number of sensors, specify the distance, _d_, between sensors (e.g., in metres).
+  * Add a new sensor every _d_ metres along the straight line connecting the sensors.
+  * If the distance to the next sensor, _l_, is < _d_, stop (then go to the next _locating sensor_)
+
+The input file would look something like the following: 
+
+[ _n_ ] [ _d_ ]
+[ _lat<sub>1</sub>_ ] [ _long<sub>1</sub>_ ] 
+[ _lat<sub>2</sub>_ ] [ _long<sub>2</sub>_ ] 
+... ...
+... ...
+[ _lat<sub>n</sub>_ ] [ _long<sub>n</sub>_ ] 
+
+
+where:
+
+_n_ = number of locating sensors
+_d_ = distance between sensors
+_lat<sub>i</sub>_ = latitude of locating sensor _i_
+_long<sub>i</sub>_ = longitude of locating sensor _i_
+
 ## NETLOGO FEATURES
 
 This model uses the [Netlogo GIS extension](https://ccl.northwestern.edu/netlogo/docs/gis.html).
