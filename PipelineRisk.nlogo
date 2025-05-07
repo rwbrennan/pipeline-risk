@@ -101,13 +101,13 @@ to go
   ;; Move storm cell(s)
   ask cells
   [
-    if ticks mod cell-speed = 0
-    [
+    ;if ticks mod cell-speed = 0
+    ;[
       ifelse not member? patch-here border
       [
         ;; move across the worldview
-        ;; **** use physical distances/speeds here ****
-        fd 1
+        ;; cell-speed is in patches/second
+        fd cell-speed
         set cell-mean-x pxcor
         set cell-mean-y pycor
         ;; show latitude/longitude coordinate for the storm cell
@@ -119,11 +119,13 @@ to go
         ;; diminish (for now just diminish by 10% per increment)
         set cell-rain-rate floor ( cell-rain-rate * 0.9 )
       ]
-    ]
+    ;]
   ]
   ;; Allow the rain to flow downslope based on the DEM
   ask raindrops
-  [ forward random-normal 0.1 0.1
+  [ ;; assuming a surface water flow rate of 1 m/s (std dev 0.3 m/s)
+    ;; based on https://www.agric.wa.gov.au/water-management/suggested-maximum-velocities-surface-water-flow
+    forward random-normal 0.00333 0.001
     let h gis:raster-sample aspect self
     ifelse h >= -360
     [ set heading subtract-headings h 180 ]
@@ -569,7 +571,7 @@ Additionally, on _Setup_ a text file is read to load the pipeline and storm cell
 <cell-mean-x> <cell-sd-x> <cell-mean-y> <cell-sd-y> <cell-rain-rate> <cell-speed> <cell-heading>
 ```
 
-The `<cell speed>` parameter is really a rate: i.e., number of ticks until a forward movement of 1.
+The `<cell speed>` parameter is in patches/second. Currently, we are using a cell velocity of 20 km/hr or 5.6 m/s. Setting the time scale to 1 tick = 1 second and given that 1 patch is 300 m, this results in 0.0185 patches/second.
 
 The _Go_ routine creates raindrops at random locations around a moving centroid (storm cell) at the specified _rain-rate_. This storm cell is shown by a green X on the worldview and labelled with its "size" (std deviation in x and y directions). Raindrops flow downstream based on the slope of the landscape (determined by the DEM). Raindrops are represented by blue dots. 
 
