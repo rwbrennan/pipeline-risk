@@ -7,6 +7,8 @@ breed [cells cell]
 sensors-own [
   sensor-no      ;; sensor number
   maximum-flow   ;; maximum water flow at the sensor
+  delta-flow     ;; change in surface flow at sensor
+  previous-drops ;; previous count of raindrops at neighbors
 ]
 
 globals [
@@ -138,6 +140,7 @@ to go
   ask sensors
   [
     calculate-max-flow
+    calculate-delta-flow
   ]
 
   ;; Remove the raindrops when they flow to the border of the worldview
@@ -209,6 +212,8 @@ to create-pipeline
       set maximum-flow 0
       set sensor-flow lput maximum-flow sensor-flow
       set my-sensor-no sensor-no
+      set delta-flow 0
+      set previous-drops 0
       if i > 0 [
         create-links-with sensors with [ sensor-no = my-sensor-no - 1 ]
       ]
@@ -358,6 +363,19 @@ to calculate-max-flow
   [
     set maximum-flow current-flow
     set sensor-flow replace-item ( sensor-no - 1 ) sensor-flow maximum-flow
+  ]
+end
+
+to calculate-delta-flow
+  ;; This procedure is used to calculate the change in flow at each sensor
+  ;; - calculated in 60 second intervals
+  let temp 0
+  if ticks mod 60 = 0
+  [
+
+    set temp count raindrops-on neighbors
+    set delta-flow temp - previous-drops
+    set previous-drops temp
   ]
 end
 @#$#@#$#@
@@ -552,6 +570,24 @@ deg-min-sec?
 0
 1
 -1000
+
+PLOT
+8
+735
+208
+885
+Delta Flow (60 second)
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -14835848 true "" "ask sensor (sensor-selected - 1) [ plot delta-flow ]"
 
 @#$#@#$#@
 ## WHAT IS IT?
