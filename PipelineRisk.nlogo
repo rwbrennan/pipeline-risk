@@ -355,6 +355,27 @@ to lat-long-deg-label
   set label (word "(" lat-deg "d " lat-min "m " lat-sec "s N, " long-deg "d " long-min "m " long-sec "s W)")
 end
 
+to xycor-to-long-lat [ xcoord ycoord ]
+  ;; This procedure is used to (xcor, ycor) latitude and longitude
+  ;; - latitude and longitude are displayed in degrees, minutes, seconds format
+  ;;
+  let temp 0
+  ;; Latitude
+  let temp-lat latitude + (10 / 110.547E3) * cell-size * ycoord
+  set lat-deg floor temp-lat
+  set temp (( temp-lat - lat-deg) * 60)
+  set lat-min floor temp
+  set lat-sec floor (( temp - lat-min) * 60)
+  ;; Longitude
+  let temp-long longitude - (10 / 110.547E3) * cell-size * xcoord
+  set long-deg floor temp-long
+  set temp (( temp-long - long-deg) * 60)
+  set long-min floor temp
+  set long-sec floor (( temp - long-min) * 60)
+  show (word "(" precision temp-lat 4 ", " precision temp-long 4 ")")
+  show (word "(" lat-deg "d " lat-min "m " lat-sec "s N, " long-deg "d " long-min "m " long-sec "s W)")
+end
+
 to calculate-max-flow
   ;; This procedure is used to calculate the maximum flow of water at each sensor
   ;;
@@ -567,7 +588,7 @@ SWITCH
 262
 deg-min-sec?
 deg-min-sec?
-0
+1
 1
 -1000
 
@@ -1045,6 +1066,21 @@ NetLogo 6.4.0
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="4000"/>
+    <metric>sensor-flow</metric>
+    <enumeratedValueSet variable="deg-min-sec?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="draw?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inspect-sensor?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="2025-05-09 Sensor Flow" repetitions="20" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="9000"/>
     <metric>sensor-flow</metric>
     <enumeratedValueSet variable="deg-min-sec?">
       <value value="true"/>
