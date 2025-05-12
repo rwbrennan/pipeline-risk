@@ -162,7 +162,7 @@ to go
       set sensor-who who
       if inspect-sensor? [ inspect sensor sensor-who ]
     ]
-    set-current-plot "Flow"
+    set-current-plot "Surface Water Intensity"
     clear-plot
   ]
   ask sensors
@@ -528,7 +528,7 @@ PLOT
 400
 204
 550
-Flow
+Surface Water Intensity
 NIL
 NIL
 0.0
